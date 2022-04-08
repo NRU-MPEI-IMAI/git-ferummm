@@ -1,0 +1,1120 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2cm,right=1cm,marginparwidth=1.25cm]{geometry}
+\usepackage[pdf]{graphviz}
+\usepackage{xpatch}
+\usepackage{morewrites}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+ 
+\title{ТМВ}
+\author{Полина Андреева}
+\date{April 2022}
+
+\begin{document}
+
+
+\maketitle
+
+\makeatletter
+\newcommand*{\addFileDependency}[1]{% argument=file name and extension
+  \typeout{(#1)}
+  \@addtofilelist{#1}
+  \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+\xpretocmd{\digraph}{\addFileDependency{#2.dot}}{}{}
+
+\section{Задание №1. Построить конечный автомат, распознающий язык}
+
+\begin{center}
+\quad $1.1) \quad L = \{ w \in \{ a, b, c\}^* | \quad |w|_c = 1 \}$
+
+\digraph [scale=1]{d1}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    1 [shape = "circle"]
+    2 [shape = "doublecircle"]
+    0->1
+    1->1 [label="a,b" ]
+    1->2 [label="c" ]
+    2->2 [label="a,b"]
+}
+
+$1.2) \quad L = \{ w \in \{ a, b\}^* | \quad |w|_a \leq 2, |w|_b \geq 2 \}$ 
+\end{center}
+Найдем прямое произведение двух автоматов, распознающих языки:
+
+\begin{center}
+$L1 = \{ w \in \{ a, b\}^* | \quad |w|_a \leq 2\}$ \\
+
+\digraph [scale=1]{d2}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1,q2,q3 [shape = "doublecircle"]
+    0->q1
+    q1->q1 [label="b"]
+    q1->q2 [label="a"]
+    q2->q2 [label="b"]
+    q2->q3 [label="a"]
+    q3->q3 [label="b"]
+}
+
+
+$L2 = \{ w \in \{ a, b\}^* | \quad |w|_b \geq 2 \}$\\
+
+\digraph [scale=1]{d3}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    s1,s2 [shape = "circle"]
+    s3 [shape = "doublecircle"]
+    0->s1
+    s1->s1 [label="a"]
+    s1->s2 [label="b"]
+    s2->s2 [label="a"]
+    s2->s3 [label="b"]
+    s3->s3 [label="a,b"]
+}
+
+ \begin{tabular}{|c|c|c|}
+            \hline
+            Состояния & a & b \\
+            \hline
+            q1s1 & q2s1 & q1s2\\
+            q1s2 & q2s2 & q1s3\\
+            \textbf{q1s3} & q2s3 & q1s3\\
+            q2s1 & q3s1 & q2s2\\
+            q2s2 & q3s2 & q2s3\\
+            \textbf{q2s3} & q3s3 & q2s3\\
+            q3s1 &  & q3s2\\
+            q3s2 &  & q3s3\\
+            \textbf{q3s3} &  & q3s3\\
+            \hline
+\end{tabular}
+
+\digraph [scale=0.7]{d4}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1s1,q1s2,q2s1,q2s2,q3s1,q3s2 [shape = "circle"]
+    q1s3,q2s3,q3s3 [shape = "doublecircle"]
+    0->q1s1
+    q1s1->q2s1[label="a"]
+    q1s2->q2s2[label="a"]
+    q1s3->q2s3[label="a"]
+    q2s1->q3s1[label="a"]
+    q2s2->q3s2[label="a"]
+    q2s3->q3s3[label="a"]
+    
+    q1s1->q1s2[label="b"]
+    q1s2->q1s3[label="b"]
+    q1s3->q1s3[label="b"]
+    q2s1->q2s2[label="b"]
+    q2s2->q2s3[label="b"]
+    q2s3->q2s3[label="b"]
+    
+    q3s1->q3s2[label="b"]
+    q3s2->q3s3[label="b"]
+    q3s3->q3s3[label="b"]
+
+}
+$1.3) \quad L = \{ w \in \{ a, b\}^* | \quad |w|_a \neq |w|_b \}$ 
+\end{center}
+
+Данный язык не является регулярным, так как является дополнением к нерегулярному языку $\overline L$ (в силу леммы о разрастании и замкнутости относительно операции дополнения):
+
+\begin{center}
+$\overline L = \{ w \in \{ a, b\}^* | \quad |w|_a = |w|_b \}$  
+\end{center}
+
+Так как язык $L$ нерегулярный автомат построить нельзя.
+
+\begin{center}
+$1.4) \quad L = \{ w \in \{ a, b\}^* | \quad ww = www \}$
+\end{center} 
+
+Данный язык включает в себя только пустое слово.
+
+\begin{center}
+\digraph [scale=1]{d5}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    1 [shape = "doublecircle"]
+    0->1
+}
+
+\end{center} 
+
+Также этот автомат можно изобразить следующим образом, включая в него тупиковое состояние:
+\begin{center}
+\digraph [scale=1]{d6}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    1 [shape = "doublecircle"]
+    2 [shape = "circle"]
+    0->1
+    1->2 [label="a,b"]
+    2->2 [label="a,b"]
+    }
+\end{center} 
+
+Последние два автомата эквивалентны.
+
+
+\section{Задание №2. Построить конечный автомат, используя прямое произведение}
+
+\begin{center}
+$2.1) \quad L_1 = \{w \in \{ a,b \}^*  | \quad |w|_a \geq 2 \wedge |w|_b \geq 2 \}$
+\end{center}
+
+
+
+\begin{center}
+$L_1_1 = \{w \in \{ a,b \}^* \; | \quad |w|_a \geq 2 \}$
+
+
+\digraph[scale = 0.7] {d7} {
+    rankdir = LR;
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1, q2 [shape = circle]
+    q3 [shape = doublecircle]
+    0->q1
+    q1->q2 [label = "a"];
+    q1->q1 [label = "b"];
+    q2->q3 [label = "a"];
+    q2->q2 [label = "b"];
+    q3->q3 [label = "a,b"];
+}
+\end{center}
+
+
+\begin{center}
+$L_1_2 = \{w \in \{ a,b \}^* \; | \quad |w|_b \geq 2 \}$
+
+
+\digraph[scale = 0.7] {d8} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    s1, s2 [shape = circle]
+    s3 [shape = doublecircle]
+    0->s1
+    s1->s2 [label = "b"];
+    s1->s1 [label = "a"];
+    s2->s3 [label = "b"];
+    s2->s2 [label = "a"];
+    s3->s3 [label = "a,b"];
+}
+
+
+ \begin{tabular}{|c|c|c|}
+            \hline
+            Состояния & a & b \\
+            \hline
+            q1s1 & q2s1 & q1s2\\
+            q1s2 & q2s2 & q1s3\\
+            q1s3 & q2s3 & q1s3\\
+            q2s1 & q3s1 & q2s2\\
+            q2s2 & q3s2 & q2s3\\
+            q2s3 & q3s3 & q2s3\\
+            q3s1 & q3s1 & q3s2\\
+            q3s2 & q3s2 & q3s3\\
+            \textbf{q3s3} & q3s3 & q3s3\\
+            \hline
+\end{tabular}
+\newline
+\end{center}
+
+Прямое произведение автоматов:
+
+\begin{center}
+\digraph[scale=0.7] {d9} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1s1,q1s2,q1s3,q2s1,q2s2,q2s3,q3s1,q3s2 [shape = circle]
+    q3s3 [shape = doublecircle]
+    0->q1s1
+    q1s1->q2s1[label="a"]
+    q1s2->q2s2[label="a"]
+    q1s3->q2s3[label="a"]
+    q2s1->q3s1[label="a"]
+    q2s2->q3s2[label="a"]
+    q2s3->q3s3[label="a"]
+    q3s1->q3s1[label="a"]
+    q3s2->q3s2[label="a"]
+    
+    q1s1->q1s2[label="b"]
+    q1s2->q1s3[label="b"]
+    q1s3->q1s3[label="b"]
+    q2s1->q2s2[label="b"]
+    q2s2->q2s3[label="b"]
+    q2s3->q2s3[label="b"]
+    q3s1->q3s2[label="b"]
+    q3s2->q3s3[label="b"]
+    q3s3->q3s3[label="a,b"]
+}
+
+
+
+$2.2) \quad L_2 = \{w \in \{ a,b \}^*  | \quad |w| \geq 3 \wedge |w|$ нечетное$\}$ \newline
+
+
+$\quad L_2_1 = \{w \in \{ a,b \}^*  | \quad |w| \geq 3\}$ \newline
+\digraph[scale=0.7]{d10}{
+    rankdir=LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q4 [shape = doublecircle]
+    q1,q2,q3 [shape = circle]
+     
+    0 -> q1
+    q1 -> q2 [label = "a, b"]
+    q2 -> q3 [label = "a, b"]
+    q3 -> q4 [label = "a, b"]
+    q4 -> q4 [label = "a, b"]
+}
+            
+            
+$\quad L_2_2 = \{w \in \{ a,b \}^*  | \quad |w|$ нечетное$\}$   \newline         
+\digraph[scale=0.7]{d11}{
+    0 [label = < >, shape = none,height=.0,width=.0]
+    s2 [shape = doublecircle]
+    s1 [shape = circle]
+    rankdir=LR; 
+    0 -> s1;
+    s1 -> s2 [label = "a, b"];
+    s2 -> s1 [label = "a, b"];
+}    
+
+\begin{tabular}{|c|c|c|}
+            \hline
+            Состояния & a & b \\
+            \hline
+            q1s1 & q2s2 & q2s2\\
+            q1s2 & q2s1 & q2s1\\
+            q2s1 & q3s2 & q3s2\\
+            q2s2 & q3s1 & q3s1\\
+            q3s1 & q4s2 & q4s2\\
+            q3s2 & q4s1 & q4s1\\
+            q4s1 & q4s2 & q4s2\\
+            \textbf{q4s2} & q4s1 & q4s1\\
+            \hline
+\end{tabular}
+\newline
+\end{center}
+
+Прямое произведение автоматов:
+
+\begin{center}
+\digraph[scale=0.7] {d12} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1s1,q1s2,q2s1,q2s2,q3s1,q3s2,q4s1 [shape = circle]
+    q4s2 [shape = doublecircle]
+    0->q1s1
+    q1s1->q2s2[label="a,b"]
+    q1s2->q2s1[label="a,b"]
+    q2s1->q3s2[label="a,b"]
+    q2s2->q3s1[label="a,b"]
+    q3s1->q4s2[label="a,b"]
+    q3s2->q4s1[label="a,b"]
+    q4s1->q4s2[label="a,b"]
+    q4s2->q4s1[label="a,b"]
+    
+}
+\end{center}
+
+Упростим автомат:
+
+\begin{center}
+\digraph[scale=1] {d13} {
+    rankdir = LR
+    t1,t2,t3 [shape = circle]
+    t4 [shape = doublecircle]
+    0 [label = < >, shape = none,height=.0,width=.0]
+    0->t1
+    t1->t2[label="a,b"]
+    t2->t3[label="a,b"]
+    t3->t4[label="a,b"]
+    t4->t3[label="a,b"]
+    
+}
+\end{center}
+
+\begin{center}
+$2.3) \quad L_3 = \{w \in \{ a,b \}^* \; | \quad |w|_a \mbox { чётно} \wedge |w|_b \mbox{ кратно трём} \}$ \newline
+
+$L_3_1 = \{w \in \{ a,b \}^* \; | \quad |w|_a \mbox { чётно}\}$ \newline
+
+\digraph[scale = 1] {d14}{
+    rankdir=LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q2 [shape = circle]
+    q1 [shape = doublecircle]
+    0->q1
+    q1->q1 [label="b"]
+    q1->q2 [label="a"]
+    q2->q2 [label="b"]
+    q2->q1 [label="a"]
+}
+
+$L_3_2 = \{w \in \{ a,b \}^* \; | \quad |w|_a \mbox { чётно}\}$ \newline
+
+\digraph[scale = 1] {d15}{
+    0 [label = < >, shape = none,height=.0,width=.0]
+    rankdir=LR
+    s2,s3 [shape =circle] 
+    s1 [shape =doublecircle] 
+    0->s1
+    s1->s2 [label="b"]
+    s1->s1 [label="a"]
+    s2->s3 [label="b"]
+    s2->s2 [label="a"]
+    s3->s1 [label="b"]
+    s3->s3 [label="a"]
+}
+
+\begin{tabular}{|c|c|c|}
+            \hline
+            Состояния & a & b \\
+            \hline
+            \textbf{q1s1} & q2s1 & q1s2\\
+            q1s2 & q2s2 & q1s3\\
+            q1s3 & q2s3 & q1s1\\
+            q2s1 & q1s1 & q2s2\\
+            q2s2 & q1s2 & q2s3\\
+            q2s3 & q1s3 & q2s1\\
+            \hline
+\end{tabular}
+\newline
+\end{center} 
+
+ 
+Прямое произведение автоматов:
+
+\begin{center}
+\digraph[scale=0.7] {d16} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1s2,q1s3,q2s1,q2s2,q2s3 [shape = circle]
+    q1s1 [shape = doublecircle]
+    0->q1s1
+    q1s1->q2s1[label="a"]
+    q1s2->q2s2[label="a"]
+    q1s3->q2s3[label="a"]
+    q2s1->q1s1[label="a"]
+    q2s2->q1s2[label="a"]
+    q2s3->q1s3[label="a"]
+    
+    q1s1->q1s2[label="b"]
+    q1s2->q1s3[label="b"]
+    q1s3->q1s1[label="b"]
+    q2s1->q2s2[label="b"]
+    q2s2->q2s3[label="b"]
+    q2s3->q2s1[label="b"]
+}
+
+$2.4) \quad L_4 = \overline L_3$ \newline
+
+\digraph[scale=0.7] {d17} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    q1s2,q1s3,q2s1,q2s2,q2s3 [shape = doublecircle]
+    q1s1 [shape = circle]
+    0->q1s1
+    q1s1->q2s1[label="a"]
+    q1s2->q2s2[label="a"]
+    q1s3->q2s3[label="a"]
+    q2s1->q1s1[label="a"]
+    q2s2->q1s2[label="a"]
+    q2s3->q1s3[label="a"]
+    
+    q1s1->q1s2[label="b"]
+    q1s2->q1s3[label="b"]
+    q1s3->q1s1[label="b"]
+    q2s1->q2s2[label="b"]
+    q2s2->q2s3[label="b"]
+    q2s3->q2s1[label="b"]
+}
+\newline
+\end{center}
+Так как $T_4=Q_3\textbackslash T_3 = {q1s2,q1s3,q2s1,q2s2,q2s3}$. \\ 
+\begin{center}
+$2.5) \quad L_5 = L_2 \textbackslash L_3 = L_2 \textbackslash L_3 = L_2 \cap \overline L_3 = \overline L_3 \times L_2$ 
+\newline
+
+\digraph[scale=0.8] {d18} {
+    rankdir = LR
+    0 [label = < >, shape = none,height=.0,width=.0]
+    r2,r3,r4,r5,r6 [shape = doublecircle]
+    r1 [shape = circle]
+    0->r1
+    r1->r4[label="a"]
+    r2->r5[label="a"]
+    r3->r6[label="a"]
+    r4->r1[label="a"]
+    r5->r2[label="a"]
+    r6->r3[label="a"]
+    
+    r1->r2[label="b"]
+    r2->r3[label="b"]
+    r3->r1[label="b"]
+    r4->r5[label="b"]
+    r5->r6[label="b"]
+    r6->r4[label="b"]
+}
+\digraph[scale=1] {d13} {
+    rankdir = LR
+    t1,t2,t3 [shape = circle]
+    t4 [shape = doublecircle]
+    0 [label = < >, shape = none,height=.0,width=.0]
+    0->t1
+    t1->t2[label="a,b"]
+    t2->t3[label="a,b"]
+    t3->t4[label="a,b"]
+    t4->t3[label="a,b"]
+}
+\begin{tabular}{ |c|c|c| } 
+                \hline
+                 Состояния & a (rt) & b (rt) \\
+                \hline\hline
+                r1t1 & 42 & 22 \\
+                \hline 
+                r1t2 & 43 & 23 \\
+                \hline
+                r1t3 & 44 & 24 \\
+                \hline
+                r1t4 & 43 & 23 \\
+                \hline\hline
+                r2t1 & 52 & 32 \\
+                \hline
+                r2t2 & 53 & 33 \\
+                \hline
+                r2t3 & 54 & 34 \\
+                \hline
+                r2t4 & 53 & 33 \\
+                \hline\hline
+                r3t1 & 62 & 12 \\
+                \hline
+                r3t2 & 63 & 13 \\
+                \hline
+                r3t3 & 64 & 14 \\
+                \hline
+                r3t4 & 63 & 13 \\
+                \hline
+            \end{tabular} \:\:
+            \begin{tabular}{ |c|c|c| } 
+                \hline
+                Состояния & a & b \\
+                \hline\hline
+                r4t1 & 12 & 52 \\
+                \hline
+                r4t2 & 13 & 53 \\
+                \hline
+                r4t3 & 14 & 54 \\
+                \hline
+                r4t4 & 13 & 53 \\
+                \hline\hline
+                r5t1 & 22 & 62 \\
+                \hline
+                r5t2 & 23 & 63 \\
+                \hline
+                r5t3 & 24 & 64 \\
+                \hline
+                r5t4 & 23 & 63 \\
+                \hline\hline
+                r6t1 & 32 & 42 \\
+                \hline
+                r6t2 & 33 & 43 \\
+                \hline
+                r6t3 & 34 & 44 \\
+                \hline
+                r6t4 & 33 & 43 \\
+                \hline
+            \end{tabular}
+          
+\digraph[scale=0.5] {d19} {
+    0 [label = < >, shape = none,height=.0,width=.0]
+    11,12,13,14,21,22,23,31,32,33,41,42,43,51,52,53,54,61,62,63 [shape = circle]
+    24,34,44,64 [shape = doublecircle]
+    0->11
+    11->42[label="a"]
+    12,14->43[label="a"]
+    13->44[label="a"]
+    
+    21->52[label="a"]
+    22,24->53[label="a"]
+    23->54[label="a"]
+    
+    31->62[label="a"]
+    32,34->63[label="a"]
+    33->64[label="a"]
+
+    41->12[label="a"]
+    42,44->13[label="a"]
+    43->14[label="a"]
+
+    51->22[label="a"]
+    52,54->23[label="a"]
+    53->24[label="a"]
+
+    61->32[label="a"]
+    62,64->33[label="a"]
+    63->34[label="a"]
+    
+    11->22[label="b"]
+    12,14->23[label="b"]
+    13->24[label="b"]
+    
+    21->32[label="b"]
+    22,24->33[label="b"]
+    23->34[label="b"]
+    
+    31->12[label="b"]
+    32,34->13[label="b"]
+    33->14[label="b"]
+
+    41->52[label="b"]
+    42,44->53[label="b"]
+    43->54[label="b"]
+
+    51->62[label="b"]
+    52,54->63[label="b"]
+    53->64[label="b"]
+
+    61->42[label="b"]
+    62,64->43[label="b"]
+    63->44[label="b"]
+
+}
+\end{center}
+
+\section{Задание №3. Построить минимальный ДКА по регулярному выражению}
+ 
+\begin{equation}
+(ab + aba)^* a
+\end{equation}
+ 
+ДКА для ab:
+ 
+\digraph {Task311}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    rankdir=LR;
+    node[shape=circle] s0,s1;
+    node[shape=doublecircle] s2;
+    0->s0;
+    s0->s1 [label="a"];
+    s1->s2 [label="b"];
+}
+ 
+ДКА для aba:
+ 
+\digraph {Task312}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] q0,q1,q2;
+    node[shape=doublecircle] q3;
+    0->q0;
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->q3 [label="a"];
+}
+ 
+Автомат объединения aba и ab:
+ 
+\digraph[scale = 0.8] {Task313}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] sq1, s0, s1,q0,q1,q2;
+    node[shape=doublecircle] sq2;
+    0->sq1;
+    sq1->s0 [label="eps"]
+    sq1->q0 [label="eps"]
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->sq2[label="a"];
+    s0->s1 [label="a"];
+    s1->sq2 [label="b"];
+}
+ 
+НКА с итерациями:
+ 
+\digraph [scale=0.65]{Task314}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] sq1,s0,s1,q0,q1,q2;
+    node[shape=doublecircle] sq2;
+    0->sq1;
+    sq1->sq2 [label="eps"];
+    sq1->s0 [label="eps"];
+    sq1->q0 [label="eps"];
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->sq2 [label="a"];
+    s0->s1 [label="a"];
+    s1->sq2 [label="b"];
+    sq2->sq1[label="eps"];
+}
+ 
+НКА с конкатенацией:
+ 
+\digraph [scale=0.65]{Task315}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] sq1,s0,s1,q0,q1,q2,sq2;
+    node[shape=doublecircle] sq3;
+    0->sq1;
+    sq1->sq2 [label="eps"];
+    sq1->s0 [label="eps"];
+    sq1->q0 [label="eps"];
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q2->sq2 [label="a"];
+    s0->s1 [label="a"];
+    s1->sq2 [label="b"];
+    sq2->sq1[label="eps"];
+    sq2->sq3[label="a"];
+}
+
+Избавляемся от $\lambda$-переходов:
+
+\digraph [scale=0.65]{Task316}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] 1,2,3,4;
+    node[shape=doublecircle] 5;
+    0->1;
+    1->2 [label="a"];
+    1->3 [label="a"];
+    1->5 [label="a"];
+    2->1 [label="b"];
+    3->4 [label="b"];
+    4->1 [label="a"];
+    
+}
+
+ \begin{tabular}{|c|c|c|}
+            \hline
+            Узлы & a & b \\
+            \hline
+            1 & 235 & -\\
+            235 & - & 14\\
+            14 & 2351 & -\\
+            2351 & 235 & 14\\
+            \hline
+\end{tabular}
+
+
+\digraph [scale=0.65]{Task317}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] 1,14;
+    node[shape=doublecircle] 235,2351;
+    0->1;
+    1->235 [label="a"];
+    235->14 [label="b"];
+    14->2351 [label="a"];
+    2351->14 [label="b"];
+    2351->235 [label="a"];
+}
+
+Переименуем вершины для красоты:\\
+\digraph [scale=0.7]{Task318}{
+    rankdir=LR;
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node[shape=circle] 1,3;
+    node[shape=doublecircle] 2,4;
+    0->1;
+    1->2 [label="a"];
+    2->3 [label="b"];
+    3->4 [label="a"];
+    4->3 [label="b"];
+    4->2 [label="a"];
+}
+
+\begin{equation}
+a(a(ab)^* b)^* (ab)^*
+\end{equation}
+ 
+Построим НКА:
+\newline
+
+\digraph[scale=1]{Task321}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 2,5;
+    node [shape = circle] 1,3,4;
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 2 [label = "a"];
+    2 -> 3 [label = "a"];
+    2 -> 5 [label = "a"];
+    3 -> 4 [label = "a"];
+    4 -> 3 [label = "b"];
+    3 -> 2 [label = "b"];
+    5 -> 2 [label = "b"];
+}
+
+Построим эквивалентный ДКА:
+\newline
+
+\begin{tabular}{ |c|c|c| } 
+    \hline
+    Состояния & a & b \\
+    \hline\hline
+    1 & 2 & - \\
+    \hline
+    2 & 35 & - \\
+    \hline
+    35 & 4 & 2 \\
+    \hline
+    4 & - & 3 \\
+    \hline
+    3 & 4 & 2 \\
+    \hline
+\end{tabular}
+\newline
+\digraph[scale=0.8]{Tasks322}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle]; 2;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 2 [label = "a"];
+    2 -> 35 [label = "a"];
+    35 -> 4 [label = "a"];
+    35 -> 2 [label = "b"];
+    4 -> 3 [label = "b"];
+    3 -> 4 [label = "a"];
+    3 -> 2 [label = "b"];
+}
+ 
+Минимизируем полученный автомат. Недостижимых вершин нет, а вот вершины 35 и 3 неразличимы, соединим их в вершину 3:\\
+\digraph[scale=1]{Task323}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 2;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 2 [label = "a"];
+    2 -> 3 [label = "a"];
+    3 -> 4 [label = "a"];
+    3 -> 2 [label = "b"];
+    4 -> 3 [label = "b"];
+} 
+
+Красиво!
+
+\begin{equation}
+(a + (a + b)(a + b)b)^*
+\end{equation}
+\newline
+Построим НКА:\\
+\digraph[scale=0.8]{Task331}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 1;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 1 [label = "a"];
+    1 -> 2 [label = "a,b"];
+    2 -> 3 [label = "a,b"];
+    3 -> 1 [label = "b"];
+} 
+\newline
+Построим эквивалентный ДКА:\\
+
+
+\begin{tabular}{ |c|c|c| } 
+    \hline
+    Состояния & a & b \\
+    \hline\hline
+    1 & 12 & 2 \\
+    \hline
+    12 & 123 & 23 \\
+    \hline
+    2 & 3 & 3 \\
+    \hline
+    123 & 123 & 123 \\
+    \hline
+    23 & 3 & 13 \\
+    \hline
+    3 & - & 1 \\
+    \hline
+    13 & 12 & 12 \\
+    \hline
+\end{tabular}
+\newline
+
+\digraph[scale=0.8]{Task332}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 1,12,123,13;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 12 [label = "a"];
+    123 -> 123 [label = "a,b"];
+    23 -> 3 [label = "a"];
+    1 -> 2 [label = "b"];
+    12 -> 23 [label = "b"];
+    12 -> 123 [label = "a"];
+    2 -> 3 [label = "a,b"];
+    23 -> 13 [label = "b"];
+    3 -> 1 [label = "b"];
+    13 -> 12 [label = "a,b"];
+} 
+\newline
+
+Разобьем на классы эквивалентности:
+
+\textbf{k0}:\{1,12,123,13\} \{23,2,3\}
+
+\textbf{k1}:\{1,12\} \{123,13\} \{23\} \{3\} \{2\}
+
+\textbf{k2}:\{1\} \{12\} \{123\} \{13\} \{23\} \{3\} \{2\}
+
+Значит наш автомат минимален.
+
+\begin{equation}
+(b+c)((ab)^*c + (ba)^*)^*
+\end{equation}
+
+Построим ДКА:
+        
+\digraph[scale=0.6]{Task341}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 2 5 7;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 2 [label = "b, c"];
+    2 -> 3 [label = "a"];
+    2 -> 6 [label = "b"];
+    3 -> 4 [label = "b"];
+    4 -> 5 [label = "c"];
+    4 -> 3 [label = "a"];
+    5 -> 3 [label = "a"];
+    5 -> 6 [label = "b"];
+    6 -> 7 [label = "a"];
+    7 -> 3 [label = "a"];
+    7 -> 6 [label = "b"];
+}  
+
+Минимизируем полученный автомат (cостояния 2,5,7 неразличимы - сведем к вершине 257):
+     
+
+\digraph[scale=0.6]{Task342}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 257;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 257 [label = "b, c"];
+    257 -> 3 [label = "a"];
+    257 -> 6 [label = "b"];
+    3 -> 4 [label = "b"];
+    4 -> 257 [label = "c"];
+    4 -> 3 [label = "a"];
+    6 -> 257 [label = "a"];
+}  
+
+\begin{equation}
+(a+b)^+(aa + abab + bb + baba)(a+b)^+
+\end{equation}        
+
+Построим НКА:
+
+
+\digraph[scale=0.62] {Task351}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape=doublecircle] q11;
+    node [shape=circle];
+	rankdir=LR;
+	0->q1;
+    q1->q2 [label="a,b"];
+    q2->q1 [label="a,b"];
+    q2->q3 [label="a"];
+    q2->q4 [label="b"];
+    q3->q5 [label="b"];
+    q3->q9 [label="a"];
+    q4->q6 [label="a"];
+    q4->q10 [label="b"];
+    q5->q7 [label="a"];
+    q6->q8 [label="b"];
+    q7->q9 [label="b"];
+    q8->q10 [label="a"];
+    q9->q11 [label="a,b"];
+    q10->q11 [label="a,b"];
+    q11->q11 [label="a,b"];
+}      
+
+    
+Эквивалентный ДКА:
+
+\digraph[scale=0.22] {Task352}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape=doublecircle] q1q3q11, q2q5q11, q1q3q7q11, q2q9q11, q2q5q9q11, q1q4q11, q2q6q11, q1q4q8q11, q2q6q10q11, q2q10q11;
+    node [shape=circle];
+	rankdir=LR;
+	0->q1;
+    q1 -> q2 [label="a,b"];
+    q2 -> q1q3 [label="a"];
+    q2 -> q1q4 [label="b"];
+    q1q3 -> q2q9 [label="a"];
+    q1q3 -> q2q5 [label="b"];
+    q2q5 -> q1q3q7 [label="a"];
+    q2q5 -> q1q4 [label="b"];
+    q1q4 -> q2q6 [label="a"];
+    q1q4 -> q2q10 [label="b"];
+    q2q6 -> q1q3 [label="a"];
+    q2q6 -> q1q4q8 [label="b"];
+    q1q4q8 -> q2q6q10 [label="a"];
+    q1q4q8 -> q2q10 [label="b"];
+    q2q6q10 -> q1q3q11 [label="a"];
+    q2q6q10 -> q1q4q8q11 [label="b"];
+    q2q10 -> q1q3q11 [label="a"];
+    q2q10 -> q1q4q11 [label="b"];
+    q1q3q7 -> q2q9 [label="a"];
+    q1q3q7 -> q2q5q9 [label="b"];
+    q2q9 -> q1q3q11 [label="a"];
+    q2q9 -> q1q4q11 [label="b"];
+    q1q3q11 -> q2q9q11 [label="a"];
+    q1q3q11 -> q2q5q11 [label="b"];
+    q2q5q11 -> q1q3q7q11 [label="a"];
+    q2q5q11 -> q1q4q11 [label="b"];
+    q2q5q9 -> q1q4q11 [label="b"];
+    q2q5q9 -> q1q3q7q11 [label="a"];
+    q2q5q9 -> q1q4q11 [label="b"];
+    q1q3q7q11 -> q2q9q11 [label="a"];
+    q1q3q7q11 -> q2q5q9q11 [label="b"];
+    q2q9q11 -> q1q4q11 [label="b"];
+    q2q5q9q11 -> q1q3q7q11 [label="a"];
+    q2q5q9q11 -> q1q4q11 [label="b"];
+    q1q4q11 -> q2q6q11 [label="a"];
+    q1q4q11 -> q2q10q11 [label="b"];
+    q2q6q11 -> q1q4q8q11 [label="b"];
+    q1q4q8q11 -> q2q6q10q11 [label="a"];
+    q1q4q8q11 -> q2q10q11 [label="b"];
+    q2q6q10q11 -> q1q3q11 [label="a"];
+    q2q6q10q11 -> q1q4q8q11 [label="b"];
+    q2q10q11 -> q1q3q11 [label="a"];
+    q2q10q11 -> q1q4q11 [label="b"];
+}       
+
+
+Минимизируем ДКА:
+
+\digraph[scale=0.56] {task3ans5}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape=doublecircle] h9;
+    node [shape=circle];
+	rankdir=LR;
+	0->h1;
+	h1 -> h2 [label="a, b"]
+    h2 -> h3 [label="a"]
+    h2 -> h4 [label="b"]
+    h3 -> h8 [label="a"]
+    h3 -> h5 [label="b"]
+    h4 -> h6 [label="a"]
+    h4 -> h8 [label="b"]
+    h5 -> h7 [label="a"]
+    h5 -> h4 [label="b"]
+    h6 -> h3 [label="a"]
+    h6 -> h7 [label="b"]
+    h7 -> h8 [label="a,b"]
+    h8 -> h9 [label="a,b"]
+    h9 -> h9 [label="a,b"]
+}       
+
+    
+Автомат минимален.
+
+
+\section{Задание №4. Определить, является ли следующие языки регулярными или нет:}
+    
+
+\begin{enumerate}
+    \item \(L=\{(aab)^{n}b(aba)^{m} : n \geqslant 0, m \geqslant 0\}\)
+    
+Язык регулярный, т.к. по нему можно построить ДКА:
+
+\digraph[scale=0.5]{g41}{
+    0 [label = < >, shape = none,height=.0,width=.0];
+    node [shape = doublecircle] 5 8;
+    node [shape = circle];
+    rankdir=LR; 
+    0 -> 1;
+    1 -> 2 [label = "a"];
+    1 -> 5 [label = "b"];
+    2 -> 3 [label = "a"];
+    3 -> 4 [label = "b"];
+    4 -> 5 [label = "b"];
+    4 -> 2 [label = "a"];
+    5 -> 6 [label = "a"]; 
+    6 -> 7 [label = "b"];
+    7 -> 8 [label = "a"];
+    8 -> 5 [label = "a"];
+}  
+
+
+
+    \item \(L = \{uaav : u \in \{a, b\}^*, \; v \in \{a, b\}^*, |u|_b \geqslant |v|_a\}\)
+    
+    Фиксируем \(\forall n \in \mathbb{N} \) и рассматриваем слово \(\omega = b^{n}aaa^{n}, \; |\omega| = 2n + 2 \geq n\). Рассмотрим все разбиения этого слова \(\omega = xyz\) такие, что \(|y| \neq 0, \; |xy| \leq n\):
+    $$x = b^{k}, \; y = b^{l}, \; z = b^{n - k - l}aaa^n,$$ 
+    
+    \begin{center}
+        где \(1 \leq k + l \leq n \; \wedge \; l > 0\)
+    \end{center} 
+    
+    Других разбиений нет.
+    Для любого из таких разбиений слово \(xy^0z \notin L\). Лемма о разрастании не выполняется, значит \(L\) нерегулярный язык.
+    
+    \item \(L = \{a^mw : w \in \{a, b\}^{*}, \; 1 \geqslant |w|_b \geqslant m\}\)
+    
+    
+    Фиксируем \(\forall n \in \mathbb{N} \) и рассматриваем слово \(\omega = a^nb^n, \; |\omega| = 2n \geqslant n\). Рассмотрим все разбиения этого слова \(\omega = xyz\) такие, что \(|y| \neq 0, \; |xy| \leq n\):
+    $$x = a^{l}, \; y = a^{m}, \; z = a^{n-l-m}b^{n},$$ 
+    
+    \begin{center}
+        где \(l + k \leqslant n \; \wedge \; m \ne 0\)
+    \end{center} 
+    
+    Других разбиений нет. Выполним накачку: 
+    $$xy^{i}z = a^{l}(a^{m})^{i}a^{n-l-m}b^{n} = a^{n-mi}b^{n} \notin L, \; i 
+    \geqslant 0 \in \mathbb{N} $$
+    Лемма о разрастании не выполняется, значит \(L\) нерегулярный язык.
+    
+    \item \(L = \{a^{k}b^{m}a^{n} : k = n \vee m > 0\}\)
+    
+    
+   Фиксируем \(\forall n \in \mathbb{N} \) и рассматриваем слово \(\omega = a^nba^n, \; |\omega| = 2n + 1 \geqslant n\). Рассмотрим все разбиения этого слова \(\omega = xyz\) такие, что \(|y| \neq 0, \; |xy| \leq n\):
+    $$x = a^{k}, \; y = a^{m}, \; z = a^{n-k-m}ba^{n},$$ 
+    
+    \begin{center}
+        где \(k + m \leqslant n \; \wedge \; m \ne 0\)
+    \end{center} 
+    
+    Дргуих разбиений нет.
+    Выполняем накачку: 
+    $$xy^{i}z = a^{k}(a^{m})^{i}a^{n-k-m}ba^{n} = a^{n+m(i-1)}ba^{n} \notin L, \; i 
+    \geqslant 2 \in \mathbb{N} $$
+    Получили противоречие, лемма о разрастании не выполняется, значит \(L\) нерегулярный язык.
+    
+    \item \(L = \{ucv : u \in \{a, b\}^*, \; v \in \{a, b\}^*, u \ne v^R \}\)
+    
+    
+    Фиксируем \(\forall n \in \mathbb{N} \) и рассматриваем слово \(\omega = (ab)^nc(ab)^n = \alpha_1\alpha_2...\alpha_{4n+1}, \; |\omega| = 4n + 1 \geqslant n\). Рассмотрим все разбиения этого слова \(\omega = xyz\) такие, что \(|y| \neq 0, \; |xy| \leq n\):
+    $$x = \alpha_1\alpha_2...\alpha_k, \; y = \alpha_{k+1}...\alpha_{k+m}, \; z = \alpha_{k+m+1}...\alpha_{4n+1}c(ab)^n,$$
+    
+    \begin{center}
+        где \(k + m \leqslant n \; \wedge \; m \ne 0\)
+    \end{center} 
+    
+    Других разбиений нет. Выполняем накачку: 
+    $$xy^{i}z = (\alpha_1\alpha_2...\alpha_k)(\alpha_{k+1}...\alpha_{k+m})^i(\alpha_{k+m+1}...\alpha_{4n+1}c(ab)^n)$$
+    При \(i = 2\) имеем:
+    $$xy^{2}z = (\alpha_1\alpha_2...\alpha_k)(\alpha_{k+1}...\alpha_{k+m})^2(\alpha_{k+m+1}...\alpha_{4n+1}c(ab)^n) \notin L$$
+    Лемма о разрастании не выполняется, значит \(L\) нерегулярный язык.
+
+\end{enumerate}
+
+
+\end{document}
